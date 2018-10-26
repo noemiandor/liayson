@@ -1,0 +1,18 @@
+Package: liayson
+Type: Package
+Title: Linking Singe-Cell Transcriptomes Atween Contemporary Subpopulation Genomes
+Version: 1.0.1
+Date: 2017-03-03
+Author: Noemi Andor
+Maintainer: Noemi Andor <liayson.r@gmail.com>
+Description: Given a RNA-seq derived cell-by-gene matrix and a DNA-seq derived copy number segmentation, LIAYSON predicts the number of clones present in a tumor, their size, the copy number profile of each clone and the clone membership of each single cell.
+License: GPL-2
+URL: https://github.com/noemiandor/liayson, https://groups.google.com/d/forum/liayson
+Depends: R (>= 3.0)
+Imports: phangorn, RColorBrewer, ape, parallel, plyr, matlab, biomaRt, expands, distances, arules, e1071, proxy, gplots, methods
+Suggests: mclust, futile.matrix, fpc, NbClust, modeest, pastecs, vegan
+Packaged: 2017-03-17 02:11:04 UTC; noemi
+NeedsCompilation: no
+Repository: CRAN
+Date/Publication: 2017-04-03 08:11:04
+RoxygenNote: 6.0.1

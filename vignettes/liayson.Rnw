@@ -1,0 +1,52 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+%\usepackage[authoryear,round]{natbib}
+\usepackage{hyperref}
+
+\textwidth=6.2in
+\textheight=8.5in
+%\parskip=.3cm
+\oddsidemargin=.1in
+\evensidemargin=.1in
+\headheight=-.3in
+
+\newcommand{\scscst}{\scriptscriptstyle}
+\newcommand{\scst}{\scriptstyle}
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+
+\author{Noemi Andor}
+%\VignetteIndexEntry{liayson}
+\begin{document}
+\title{Description of LIAYSON}
+
+\maketitle
+% \tableofcontents
+
+
+\section{Example}
+<<>>=
+library(liayson)
+## Load data and map genes onto segments
+data(epg)
+data(segments)
+X=aggregateSegmentExpression(epg, segments, mingps=20, GRCh=38)
+head(X$eps[,1:5]); ##Aggregate expression of first five cells
+## Calculate number of expressed genes per cell
+data(epg)
+gpc = apply(epg>0, 2, sum)
+## Calculate copy number from expression
+cn=segments[rownames(X$eps),"CN_Estimate"]
+cnps = segmentExpression2CopyNumber(X$eps, gpc, cn, nCores=1)
+head(cnps[,1:5]); ##Copy number of first five cells
+## Cluster cells based onb their copy number
+outc = clusterCells(cnps, h=0.15)
+print(plyr::count(outc$sps))
+@
+Done.
+
+
+
+\end{document}

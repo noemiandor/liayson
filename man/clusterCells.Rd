@@ -1,6 +1,5 @@
 \name{clusterCells}
 \alias{clusterCells}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Grouping cells into clones.
 }
@@ -8,24 +7,36 @@ Grouping cells into clones.
 Clusters cells according to their copy number profile.
 }
 \usage{
-clusterCells(cnps, k=NA, h=NA, consolidate=1, weights=NULL, minSegLength=1E6, 
-   colCol=NULL, rowCol=NULL, main="", chrOrder=NULL, cexRow = 0.07, trace ="none")
+clusterCells(cnps, k=NA, h=NA, weights=NULL, minSegLength=1E6, 
+                       chrOrder=NULL,  HFUN="ward.D2",...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{cnps}{
     Segment-by-cell matrix of copy number states (output of \code{segmentExpression2CopyNumber}).
   }
-  \item{consolidate}{
-    Whether or not to homogenize the profiles of cells with same clone membership (consolidate=0 <=> all cells within a clone will be identical; consolidate=1 <=> intra-clone homogeneity not enforced).
+  \item{k}{
+    Desired number of clusters (see also \code{\link{cutree}}).
+  }
+  \item{h}{
+    Height at which the tree should be cut (see also \code{\link{cutree}}).
+  }
+  \item{weights}{
+    Vector of weights assigning differential importance to segments (typically calculated based on segment lengths).
   }
   \item{minSegLength}{
     Minimum number of base pairs below which a segment is to be excluded when defining clones.
   }
+  \item{chrOrder}{
+    Specifies order in which chromosomes should be plotted.
+  }
+  \item{HFUN}{
+    Agglomeration method used to compute the hierarchical clustering (see also \code{\link{hclust}}).
+  }
+  \item{...}{additional arguments passed on to \code{\link{heatmap.2}} }
 }
 \details{
 Let CNF be the matrix of copy number states per non-private segment per cell, with entries \eqn{(i, j)} pointing to the copy number state of cell  \eqn{i} at locus  \eqn{j}. 
-Pairwise distances between cells are calculated in Euclidean space of their segmental copy number profiles (rows in CNF), weighted by segment length. Hierarchical clustering with the ward.D2 agglomeration method is used to build a phylogenetic tree of the cells. A subtree is defined as a clone if the maximum distance between its cell members is less than a user-defined fraction of the genome (\eqn{h}.\cr
+Pairwise distances between cells are calculated in Euclidean space of their segmental copy number profiles (rows in CNF), weighted by segment length. Hierarchical clustering is used to build a tree of the cells. A subtree is defined as a clone if the maximum distance between its cell members is less than a user-defined fraction of the genome (\eqn{h}).\cr
 Alternatively, if \eqn{k} is set, the tree is cut to obtain \eqn{k} clones.\cr
 If neither \eqn{h} nor \eqn{k} are set, Akaike information criterion is used to decide on anywhere between 1 and 30 clones.
 }
@@ -37,25 +48,17 @@ If neither \eqn{h} nor \eqn{k} are set, Akaike information criterion is used to 
           The clone membership of each cell (that is, columns in cnps).
     }
     \item{tree}{
-          An object of class hclust which describes the tree produced by the clustering process.
+          An object of class hclust.
     }
 }
 \references{
-%% ~put references to the literature/web site here ~
+Andor, N.*, Lau, B.*, Catalanotti, C., Kumar, V., Sathe, A., Belhocine, K., Wheeler, T., et al. (2018) Joint single cell DNA-Seq and RNA-Seq of gastric cancer reveals subclonal signatures of genomic instability and gene expression. doi: https://doi.org/10.1101/445932
 }
 \author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+Noemi Andor
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
 data(cnps)
-outc = clusterCells(cnps, h=0.15)
+outc = clusterCells(cnps[apply(cnps, 1, var)>0, ])
 }

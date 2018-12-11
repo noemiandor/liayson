@@ -1,7 +1,7 @@
 \name{assignCellsToClusters}
 \alias{assignCellsToClusters}
 \title{Assigns cells to previously defined clones.}
-\description{}
+\description{Cells that have not been used to define clones (such as cycling or apoptotic cells) can retrospectively be assigned a clone membership.}
 \usage{assignCellsToClusters(outc, xps, similarity=T)}
 \arguments{
   \item{outc}{

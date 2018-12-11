@@ -33,20 +33,25 @@ library(liayson)
 data(epg)
 data(segments)
 X=aggregateSegmentExpression(epg, segments, mingps=20, GRCh=38)
-head(X$eps[,1:5]); ##Aggregate expression of first five cells
+head(X$eps[,1:3]); ##Aggregate expression of first three cells
 ## Calculate number of expressed genes per cell
 data(epg)
 gpc = apply(epg>0, 2, sum)
 ## Calculate copy number from expression
 cn=segments[rownames(X$eps),"CN_Estimate"]
 cnps = segmentExpression2CopyNumber(X$eps, gpc, cn, nCores=1)
-head(cnps[,1:5]); ##Copy number of first five cells
-## Cluster cells based onb their copy number
-outc = clusterCells(cnps, h=0.15)
-print(plyr::count(outc$sps))
+head(cnps[,1:3]); ##Copy number of first three cells
 @
-Done.
 
+\begin{figure}[htbp]
+\begin{center}
+<<fig=TRUE, width=10, height=6>>=
+outc = clusterCells(cnps, h=0.15)
+@
+\caption{\label{f4.3} 
+Cells are clustered based on their copy number}
+\end{center}
+\end{figure}
 
 
 \end{document}

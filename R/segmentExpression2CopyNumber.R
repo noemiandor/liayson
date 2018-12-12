@@ -66,9 +66,9 @@ segmentExpression2CopyNumber <- function(eps, gpc, cn, seed = 0, outF = NULL, ma
     while (pc < seed & minP > -0.01) {
         minP = minP - 0.005
         out = .pickML(out, PRIR, cnStates, minP = minP)
-        pc = .progressReport(out, paste("a-priori probabilities @ minRP >=", minP), verbose = F)
+        pc = .progressReport(out, paste("a-priori probabilities @ minRP >=", round(minP, 2) ), verbose = F)
     }
-    pc = .progressReport(out, paste("a-priori probabilities @ minRP >=", minP))
+    pc = .progressReport(out, paste("a-priori probabilities @ minRP >=", round(minP, 2) ))
     pc1 = pc
     ## Visualize
     if (!is.null(outF)) {
@@ -134,8 +134,8 @@ segmentExpression2CopyNumber <- function(eps, gpc, cn, seed = 0, outF = NULL, ma
         for (i in 1:length(results)) {
             pstr = results[[i]]
             pstr = log(pstr + 1)
-            pstr = pstr/max(pstr)
-            # pstr=sweep(pstr,2,apply(pstr,2,max),FUN = '/')
+            pstr = pstr/max(pstr, na.rm=T)
+            # pstr = sweep(pstr, 2, apply(pstr, 2, max, na.rm=T), FUN = '/')
             seg = rownames(out)[i]
             for (cn_ in rownames(pstr)) {
                 PSTR[[cn_]][seg, colnames(pstr)] = pstr[cn_, ] + PRIR[[cn_]][seg, colnames(pstr)]
@@ -246,7 +246,7 @@ segmentExpression2CopyNumber <- function(eps, gpc, cn, seed = 0, outF = NULL, ma
 .progressReport <- function(out, step, verbose = T) {
     v = sum(!is.na(as.numeric(out)))/length(out)
     if (verbose) {
-        print(paste0("After ", step, ": ", round(100 * v, 2), "% segment-by-cell copy numbers inferred"))
+        print(paste0("After ", step, ": ", round(100 * v, 2), "% copy numbers inferred"))
     }
     return(v)
 }

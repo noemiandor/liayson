@@ -18,7 +18,7 @@ clusterCells(cnps, k=NA, h=NA, weights=NULL, minSegLength=1E6,
     Desired number of clusters (see also \code{\link{cutree}}).
   }
   \item{h}{
-    Height at which the tree should be cut (see also \code{\link{cutree}}).
+    Threshold used to define clones from hierarchical clustering result. A subtree is defined as a clone if the maximum distance between its cell members is less than 100*\eqn{h}\% of the genome.
   }
   \item{weights}{
     Vector of weights assigning differential importance to segments (typically calculated based on segment lengths).
@@ -35,8 +35,8 @@ clusterCells(cnps, k=NA, h=NA, weights=NULL, minSegLength=1E6,
   \item{...}{additional arguments passed on to \code{\link{heatmap.2}} }
 }
 \details{
-Let CNF be the matrix of copy number states per non-private segment per cell, with entries \eqn{(i, j)} pointing to the copy number state of cell  \eqn{i} at locus  \eqn{j}. 
-Pairwise distances between cells are calculated in Euclidean space of their segmental copy number profiles (rows in CNF), weighted by segment length. Hierarchical clustering is used to build a tree of the cells. A subtree is defined as a clone if the maximum distance between its cell members is less than a user-defined fraction of the genome (\eqn{h}).\cr
+Let CNF be the matrix of copy number states per non-private segment per cell, with entries \eqn{(i, j)} pointing to the copy number state of cell  \eqn{j} at locus  \eqn{i}. 
+Pairwise distances between cells are calculated in Hamming space of their segmental copy number profiles (rows in CNF), weighted by segment length. Hierarchical clustering is used to build a tree of the cells from the distance matrix. A subtree is defined as a clone if the maximum distance between its cell members is less than a user-defined fraction of the genome (\eqn{h}).\cr
 Alternatively, if \eqn{k} is set, the tree is cut to obtain \eqn{k} clones.\cr
 If neither \eqn{h} nor \eqn{k} are set, Akaike information criterion is used to decide on anywhere between 1 and 30 clones.
 }
@@ -57,7 +57,6 @@ Andor, N.*, Lau, B.*, Catalanotti, C., Kumar, V., Sathe, A., Belhocine, K., Whee
 \author{
 Noemi Andor
 }
-
 \examples{
 data(cnps)
 outc = clusterCells(cnps[apply(cnps, 1, var)>0, ])

@@ -1,20 +1,18 @@
 clusterCells <- function(cnps, k = NA, h = NA, weights = NULL, minSegLength = 1e+06, chrOrder = NULL, HFUN = "ward.D2", ...) {
     ## CN state colorcode for heatmaps
     HMCOLS = fliplr(brewer.pal(11, "RdBu"))
+    MAXK = 30
     cnps = as.matrix(cnps)
     
     ######################### Cells & loci to keep ##
     cI = which(apply(!is.na(cnps), 2, sum) > 0.5 * nrow(cnps))
-    ## cells
+    ## cells:
     cnps = cnps[, cI]
     gI = which(apply(!is.na(cnps), 1, sum) > 0.75 * ncol(cnps))
-    ## segments
+    ## segments:
     cnps = cnps[gI, ]
     ## Impute missing values
     cnps = t(e1071::impute(t(cnps), "mean"))
-    
-    # DFUN='euclidean' Maximum number of clusters
-    MAXK = 30
     
     colCol = repmat("black", ncol(cnps), 1)
     names(colCol) = colnames(cnps)
@@ -46,7 +44,7 @@ clusterCells <- function(cnps, k = NA, h = NA, weights = NULL, minSegLength = 1e
         print("Neither k nor h is set.")
         # print('Using indices from NbClust-package to decide number of clusters') # idxs=c('kl', 'ch', 'hartigan','cindex', 'db', 'silhouette', 'ratkowsky', 'ball', 'ptbiserial', 'gap', 'frey',
         # 'mcclain', 'dunn','sdindex', 'sdbw', 'gamma', 'gplus', 'tau') idxs=c('frey', 'mcclain', 'cindex', 'sihouette','dunn') ks=matrix(NA,length(idxs),1); colnames(ks)='K'; rownames(ks)=idxs for(idx
-        # in setdiff(idxs,c('gamma', 'gplus', 'tau'))) { # nbc=try(NbClust::NbClust(data = t(cnps), distance = DFUN, min.nc = 1, max.nc = min(MAXK+1,nrow(cnps)-1), method = HFUN, index = idx),silent=T)
+        # in setdiff(idxs,c('gamma', 'gplus', 'tau'))) { # nbc=try(NbClust::NbClust(data = t(cnps), distance = 'euclidean', min.nc = 1, max.nc = min(MAXK+1,nrow(cnps)-1), method = HFUN, index = idx),silent=T)
         # nbc=try(NbClust::NbClust( diss=as.dist(d), distance = NULL, min.nc = 1, max.nc = min(MAXK+1,nrow(cnps)-1), method = HFUN, index = idx),silent=T) if(class(nbc)!='try-error'){
         # ks[idx,'K']=nbc$Best.nc['Number_clusters'] } } print(ks) ks=ks[ks<MAXK+1,]; ##Don't trust results at max of range k=round(mean(ks[is.finite(ks)]));
         # #round(modeest::mlv(ks[is.finite(ks)],method='mfv')$M)
@@ -102,7 +100,7 @@ clusterCells <- function(cnps, k = NA, h = NA, weights = NULL, minSegLength = 1e
     plot(Z, show.tip.label = T, tip.color = colI, cex = 0.2)
     hm = try(heatmap.2(tmp[ii, ], dendrogram = "row", margins = c(13, 6), cexCol = 0.85, Rowv = NULL, Colv = Colv, col = HMCOLS, colRow = colCol[ii], colCol = rowCol[colnames(tmp)], RowSideColors = colI[ii], 
         symm = F, ...))
-    # , hclustfun = function(x) hclust(x,method =HFUN), distfun = function(x) dist(x,method =DFUN)))
+    # , hclustfun = function(x) hclust(x,method =HFUN), distfun = function(x) dist(x,method ='euclidean')))
     
     colnames(cnps) = paste0("SP", TC, "_", colnames(cnps))
     return(list(cnps = cnps, sps = TC, tree = Z))

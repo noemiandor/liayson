@@ -86,7 +86,7 @@ gpc = apply(epg>0, 2, sum)
 data(eps)
 data(segments)
 cn=segments[rownames(eps),"CN_Estimate"]
-cnps = segmentExpression2CopyNumber(eps, gpc, cn, seed=0.5, nCores=2, stdOUT="log")
-head(eps[,1:5]); ##Expression of first five cells
-head(cnps[,1:5]); ##Copy number of first five cells
+#cnps = segmentExpression2CopyNumber(eps, gpc, cn, seed=0.5, nCores=2, stdOUT="log")
+#head(eps[,1:3]); ##Expression of first three cells
+#head(cnps[,1:3]); ##Copy number of first three cells
 }

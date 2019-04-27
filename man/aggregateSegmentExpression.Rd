@@ -46,10 +46,7 @@ Noemi Andor
 \examples{
 data(epg)
 data(segments)
-X=aggregateSegmentExpression(epg, segments, mingps=20, GRCh=38)
+#X=aggregateSegmentExpression(epg, segments, mingps=20, GRCh=38)
 
-##View output: 
-library(futile.matrix)
-lapply(X, peek)
 }
 

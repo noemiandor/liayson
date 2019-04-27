@@ -55,7 +55,7 @@ clusterCells <- function(cnps, k = NA, h = NA, weights = NULL, minSegLength = 1e
         print("Using Akaike information criterion to decide number of clusters...")
         ks = c()
         ## Repeat for robustness
-        for (i in 1:25) {
+        for (i in 1:min(25, ncol(cnps)-1) ) {
             fit <- sapply(1:MAXK, function(x) .kmeansAIC(kmeans(t(cnps), centers = x))$AIK)
             ks[i] = which.min(fit)
         }

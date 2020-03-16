@@ -1,11 +1,11 @@
-assignCellsToClusters <- function(outc, xps, similarity = T, maxDevFromInt=0.05) {
+assignCellsToClusters <- function(outc, xps, similarity = T) {
     fr = plyr::count(outc$sps)
     fr = fr[sort(fr$freq, decreasing = T, index.return = T)$ix, ]
     fr$x = as.character(fr$x)
     cnvs = t(.grpstats(t(outc$cnps), outc$sps, "mean")$mean)
-    devFromInt = apply(abs(round(cnvs) - cnvs), 1, median)
-    ## Don't use segments with unstable CN states within given clone
-    seg = rownames(cnvs)[devFromInt < maxDevFromInt]
+    #devFromInt = apply(abs(round(cnvs) - cnvs), 1, median)
+    ### Don't use segments with unstable CN states within given clone
+    seg = rownames(cnvs); #[devFromInt < maxDevFromInt]
     
     if (similarity) {
         method = "correlation"

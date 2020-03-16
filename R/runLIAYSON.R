@@ -1,5 +1,5 @@
 runLIAYSON <- function(X, S, sName, mingps = 20, GRCh = 37, h = 0.2, minSegLength = 1e+06, outD = NULL) {
-    print(paste("Running LIAYSON on", sName, "..."))
+    message(paste("Running LIAYSON on", sName, "..."))
     ## Genes expressed per cell:
     gpc = apply(X > 0, 2, sum)
     names(gpc) = colnames(X)

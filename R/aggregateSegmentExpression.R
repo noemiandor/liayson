@@ -13,12 +13,12 @@ aggregateSegmentExpression <- function(epg, segments, mingps = 20, GRCh = 37) {
         }
     } else if (GRCh == 38) {
         # ensembl = useEnsembl(biomart='ensembl',GRCh=NULL)
-        ensembl = try(useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "aug2017.archive.ensembl.org"), silent = T)
+        ensembl = try(useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "dec2016.archive.ensembl.org"), silent = T)
         if (class(ensembl) == "try-error") {
             ensembl = useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "grch38.ensembl.org")
         }
     } else {
-        print(paste("GRCh", GRCh, "not supported. Only supporting GRCh=36, GRCh=37 or GRCh=38. Abborting."))
+        warning(paste("GRCh", GRCh, "not supported. Only supporting GRCh=36, GRCh=37 or GRCh=38. Abborting."))
         return()
     }
     mart = biomaRt::useDataset("hsapiens_gene_ensembl", mart = ensembl)
@@ -47,7 +47,7 @@ aggregateSegmentExpression <- function(epg, segments, mingps = 20, GRCh = 37) {
     iK = which(apply(gps, 1, median) >= mingps)
     eps = eps[iK, ]
     gps = gps[iK, ]
-    print(paste(">=", mingps, "genes expressed in", length(iK), "segments for", length(cells), "cells"))
+    message(paste(">=", mingps, "genes expressed in", length(iK), "segments for", length(cells), "cells"))
     
     return(list(eps = eps, gps = gps))
 }

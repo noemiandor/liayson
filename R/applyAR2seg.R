@@ -5,7 +5,7 @@
     PSTR = varargin$PSTR
     
     sI = grep(seg, rules@rhs@itemInfo[, 1])
-    print(paste("Applying association rules on segment", seg, "(", which(seg == rownames(out)), "out of", nrow(out), ")"))
+    #message(paste("Applying association rules on segment", seg, "(", which(seg == rownames(out)), "out of", nrow(out), ")"))
     
     cn_status = rep(NA, length(rules))
     for (cn_ in unique(out[!is.na(out)])) {
@@ -27,7 +27,7 @@
         ## Cells for which one can conclude copy number state of @seg
         cmap[i, names(cI)] = cI
     }
-    print(paste("Found", length(rules), "rules applying to", sum(apply(cmap, 2, any)), "cells."))
+    #message(paste("Found", length(rules), "rules applying to", sum(apply(cmap, 2, any)), "cells."))
     
     ## Calculate cummulative support for CNstate == ploidy vs. CNstate != ploidy
     cellsWithRules = c()
@@ -43,7 +43,7 @@
         }
     }
     cellsWithRules = unique(cellsWithRules)
-    print(paste("Applied rules for", length(cellsWithRules), "out of", ncol(out), "cells for segment", seg))
+    #message(paste("Applied rules for", length(cellsWithRules), "out of", ncol(out), "cells for segment", seg))
     
     return(PSTR)
 }

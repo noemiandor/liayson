@@ -1,7 +1,6 @@
 segmentExpression2CopyNumber <- function(eps, gpc, cn, seed = 0, outF = NULL, maxPloidy = 8, nCores = 2, stdOUT = "log.applyAR2seg") {
     if (nCores > round(detectCores() * 0.5)) {
-        nCores = round(detectCores() * 0.5)
-        print(paste("Attempted to use more than 50% of the available cores. Using only ", nCores, "cores."))
+        warning(paste("Attempted to use more than 50% of the available cores."))
     }
     visfit <- function(i) {
         plot(gpc, as.numeric(eps[i, ]), pch = 20, xlab = "Genes per cell", ylab = "Mean expression of segment-genes", cex = 0.15, cex.lab = 1.5, cex.axis = 1.4)
@@ -106,15 +105,16 @@ segmentExpression2CopyNumber <- function(eps, gpc, cn, seed = 0, outF = NULL, ma
         RULES = apriori(L, parameter = list(support = s_cells * 0.1, confidence = 0.75, maxlen = 4), control = list(verbose = F))
         RULES = RULES[apply(RULES@lhs@data, 2, sum) > 0]
         # RULES=sort(RULES,by='lift'); # RULES=RULES[quality(RULES)$lift>1]
-        print(paste("Mined", length(RULES), "rules. Now applying rules..."))
+        message(paste("Mined", length(RULES), "rules. Now applying rules..."))
         
         # ####Apply association rules###
-        print(paste("Using ", nCores, " cores to apply ARs to segments."))
+        message(paste("Using ", nCores, " cores to apply ARs to segments."))
         if (!is.null(stdOUT)) {
-            print(paste("Stdout and stderr connections will be redirected to ", stdOUT))
+            message(paste("Stdout and stderr connections will be redirected to ", stdOUT))
         }
         cl <- makeCluster(nCores, outfile = stdOUT)
-        ## Split expression profile by sample ID
+	try(on.exit(stopCluster(cl)))
+	## Split expression profile by sample ID
         input = list()
         for (seg in rownames(out)) {
             ## Find association rules where right hand side contains this segment
@@ -144,7 +144,7 @@ segmentExpression2CopyNumber <- function(eps, gpc, cn, seed = 0, outF = NULL, ma
         try(stopCluster(cl))
         closeAllConnections()
     } else {
-        print("No association rule mining was performed.")
+        warning("No association rule mining was performed.")
         PSTR = PRIR
     }
     # ###############
@@ -246,7 +246,7 @@ segmentExpression2CopyNumber <- function(eps, gpc, cn, seed = 0, outF = NULL, ma
 .progressReport <- function(out, step, verbose = T) {
     v = sum(!is.na(as.numeric(out)))/length(out)
     if (verbose) {
-        print(paste0("After ", step, ": ", round(100 * v, 2), "% copy numbers inferred"))
+        message(paste0("After ", step, ": ", round(100 * v, 2), "% copy numbers inferred"))
     }
     return(v)
 }

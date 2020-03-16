@@ -32,7 +32,7 @@ clusterCells <- function(cnps, k = NA, h = NA, weights = NULL, minSegLength = 1e
     hd = .weightedHamming(t(cnps), w)
     d = hd$dist
     # # ##Exclude singletons and recalculate distance # Z=hclust(d, method = HFUN); # # Z$height=round(Z$height); # TC=cutree(Z,h=0.05); # singletons=plyr::count(TC); # singletons=names(TC)[TC %in%
-    # singletons$x[singletons$freq<3]] # print(paste('Excluding',length(singletons),'singletons out of ',ncol(cnps),'cells')) # cnps=cnps[,!colnames(cnps) %in% singletons] # hd=.weightedHamming(t(
+    # singletons$x[singletons$freq<3]] # message(paste('Excluding',length(singletons),'singletons out of ',ncol(cnps),'cells')) # cnps=cnps[,!colnames(cnps) %in% singletons] # hd=.weightedHamming(t(
     # cnps ), w); d=hd$dist;
     
     ################################ Build maximum parsimony tree## trinary=hd$trinary tree <- bionjs(d) o=apply(d,1,median) tree=root(tree, outgroup = names(o[o==max(o)]),resolve.root =T) ## root
@@ -41,18 +41,18 @@ clusterCells <- function(cnps, k = NA, h = NA, weights = NULL, minSegLength = 1e
     
     ############################ Find number of clones:k ##
     if (is.na(k) && is.na(h)) {
-        print("Neither k nor h is set.")
-        # print('Using indices from NbClust-package to decide number of clusters') # idxs=c('kl', 'ch', 'hartigan','cindex', 'db', 'silhouette', 'ratkowsky', 'ball', 'ptbiserial', 'gap', 'frey',
+        message("Neither k nor h is set.")
+        # message('Using indices from NbClust-package to decide number of clusters') # idxs=c('kl', 'ch', 'hartigan','cindex', 'db', 'silhouette', 'ratkowsky', 'ball', 'ptbiserial', 'gap', 'frey',
         # 'mcclain', 'dunn','sdindex', 'sdbw', 'gamma', 'gplus', 'tau') idxs=c('frey', 'mcclain', 'cindex', 'sihouette','dunn') ks=matrix(NA,length(idxs),1); colnames(ks)='K'; rownames(ks)=idxs for(idx
         # in setdiff(idxs,c('gamma', 'gplus', 'tau'))) { # nbc=try(NbClust::NbClust(data = t(cnps), distance = 'euclidean', min.nc = 1, max.nc = min(MAXK+1,nrow(cnps)-1), method = HFUN, index = idx),silent=T)
         # nbc=try(NbClust::NbClust( diss=as.dist(d), distance = NULL, min.nc = 1, max.nc = min(MAXK+1,nrow(cnps)-1), method = HFUN, index = idx),silent=T) if(class(nbc)!='try-error'){
-        # ks[idx,'K']=nbc$Best.nc['Number_clusters'] } } print(ks) ks=ks[ks<MAXK+1,]; ##Don't trust results at max of range k=round(mean(ks[is.finite(ks)]));
+        # ks[idx,'K']=nbc$Best.nc['Number_clusters'] } } message(ks) ks=ks[ks<MAXK+1,]; ##Don't trust results at max of range k=round(mean(ks[is.finite(ks)]));
         # #round(modeest::mlv(ks[is.finite(ks)],method='mfv')$M)
         
-        # print('Using Calinski-Harabasz criterion to decide number of clusters') k=fpc::pamk(as.dist(d), krange=1:MAXK, criterion = 'ch')$nc # print('Using average silhouette criterion to decide
+        # message('Using Calinski-Harabasz criterion to decide number of clusters') k=fpc::pamk(as.dist(d), krange=1:MAXK, criterion = 'ch')$nc # message('Using average silhouette criterion to decide
         # number of clusters') # k=fpc::pamk(as.dist(d), krange=1:MAXK, criterion='asw')$nc
         
-        print("Using Akaike information criterion to decide number of clusters...")
+        message("Using Akaike information criterion to decide number of clusters...")
         ks = c()
         ## Repeat for robustness
         for (i in 1:min(25, ncol(cnps)-1) ) {
@@ -61,7 +61,7 @@ clusterCells <- function(cnps, k = NA, h = NA, weights = NULL, minSegLength = 1e
         }
         ks = plyr::count(ks)
         k = ks$x[which.max(ks$freq)]
-        print(paste("Looking for", k, "clusters..."))
+        message(paste("Looking for", k, "clusters..."))
     }
     
     ############################# Cluster into k clones ###
@@ -99,7 +99,7 @@ clusterCells <- function(cnps, k = NA, h = NA, weights = NULL, minSegLength = 1e
     ii = fliplr(Z$tip.label[Z$edge[Z$edge[, 2] <= length(Z$tip.label), 2]])
     plot(Z, show.tip.label = T, tip.color = colI, cex = 0.2)
     hm = try(heatmap.2(tmp[ii, ], dendrogram = "row", margins = c(13, 6), cexCol = 0.85, Rowv = NULL, Colv = Colv, col = HMCOLS, colRow = colCol[ii], colCol = rowCol[colnames(tmp)], RowSideColors = colI[ii], 
-        symm = F, ...))
+        symm = F, trace = "none"))
     # , hclustfun = function(x) hclust(x,method =HFUN), distfun = function(x) dist(x,method ='euclidean')))
     
     colnames(cnps) = paste0("SP", TC, "_", colnames(cnps))

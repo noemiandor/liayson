@@ -1,3 +1,8 @@
+		CHANGES IN LIAYSON VERSION 1.0.3
+
+OTHER CHANGES
+    o Changed bioMart GRCH38 link to work around temporary Ensembl web service issue. Fail gracefully if service isnot available via this new link either.
+
 		CHANGES IN LIAYSON VERSION 1.0.2
 
 OTHER CHANGES

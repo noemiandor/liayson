@@ -46,7 +46,8 @@ Noemi Andor
 \examples{
 data(epg)
 data(segments)
-#X=aggregateSegmentExpression(epg, segments, mingps=20, GRCh=38)
-
+\donttest{
+	X=aggregateSegmentExpression(epg, segments, mingps=20, GRCh=38)
+}
 }
 

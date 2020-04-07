@@ -28,4 +28,12 @@ Alternatively, if similarity is set to false, the Euclidean distance metric is u
     }
 }
 \author{Noemi Andor}
-
+\examples{
+  data(cnps)
+  data(eps)
+  set.seed(3)
+  rcells1 = sample(colnames(cnps), 120)
+  rcells2 = setdiff(colnames(eps), rcells1)
+  outc = clusterCells(cnps[apply(cnps, 1, var)>0, rcells1])
+  outc = assignCellsToClusters(outc, eps[,rcells2])
+}

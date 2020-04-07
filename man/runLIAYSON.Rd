@@ -50,5 +50,7 @@ Noemi Andor
 \examples{
 data(epg)
 data(segments)
-#out = runLIAYSON(epg, segments, sName="NCI-N87", GRCh = 38, h=0.05)
+\donttest{
+	out = runLIAYSON(epg, segments, sName="NCI-N87", GRCh = 38, h=0.05)
+}
 }

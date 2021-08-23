@@ -1,8 +1,8 @@
 Package: liayson
 Type: Package
 Title: Linking Singe-Cell Transcriptomes Atween Contemporary Subpopulation Genomes
-Version: 1.0.3
-Date: 2020-04-06
+Version: 1.0.4
+Date: 2021-06-17
 Author: Noemi Andor
 Maintainer: Noemi Andor <liayson.scRNA.R@gmail.com>
 Description: Given an RNA-seq derived cell-by-gene matrix and an DNA-seq derived copy number segmentation, LIAYSON predicts the number of clones present in a tumor, their size, the copy number profile of each clone and the clone membership of each single cell (Andor, N. & Lau, B., et al. (2018) <doi:10.1101/445932>).

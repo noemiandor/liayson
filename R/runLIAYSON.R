@@ -10,6 +10,10 @@ runLIAYSON <- function(X, S, sName, mingps = 20, GRCh = 37, h = 0.2, minSegLengt
     colnames(cps) = colnames(X)
     eps <- gps <- cps
     tmp = aggregateSegmentExpression(X, S, GRCh = GRCh, mingps = 1)
+    if(is.null(tmp)){
+        print("BiomaRt Web service for annotation of gene locations is not available. Aborting.")
+        return()
+    }
     eps[rownames(tmp$eps), ] = tmp$eps
     gps[rownames(tmp$gps), ] = tmp$gps
     

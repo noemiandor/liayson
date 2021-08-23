@@ -1,3 +1,8 @@
+		CHANGES IN LIAYSON VERSION 1.0.4
+
+OTHER CHANGES
+    o runLiayson now also fails gracefully if service is not available.
+
 		CHANGES IN LIAYSON VERSION 1.0.3
 
 OTHER CHANGES

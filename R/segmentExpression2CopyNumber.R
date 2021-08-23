@@ -113,8 +113,8 @@ segmentExpression2CopyNumber <- function(eps, gpc, cn, seed = 0, outF = NULL, ma
             message(paste("Stdout and stderr connections will be redirected to ", stdOUT))
         }
         cl <- makeCluster(nCores, outfile = stdOUT)
-	try(on.exit(stopCluster(cl)))
-	## Split expression profile by sample ID
+        try(on.exit(stopCluster(cl)))
+        ## Split expression profile by sample ID
         input = list()
         for (seg in rownames(out)) {
             ## Find association rules where right hand side contains this segment
@@ -141,8 +141,6 @@ segmentExpression2CopyNumber <- function(eps, gpc, cn, seed = 0, outF = NULL, ma
                 PSTR[[cn_]][seg, colnames(pstr)] = pstr[cn_, ] + PRIR[[cn_]][seg, colnames(pstr)]
             }
         }
-        try(stopCluster(cl))
-        closeAllConnections()
     } else {
         warning("No association rule mining was performed.")
         PSTR = PRIR
@@ -167,7 +165,7 @@ segmentExpression2CopyNumber <- function(eps, gpc, cn, seed = 0, outF = NULL, ma
         }
         tmp = out[gI, cI]
         hm = try(heatmap.2(tmp, trace = "none", symm = F, hclustfun = function(x) hclust(x, method = "ward.D2"), distfun = function(x) dist(x, method = "euclidean"), na.color = "black", main = paste0(nrow(tmp), 
-            " segments x ", length(cI), " cells"), col = HMCOLS))
+                                                                                                                                                                                                        " segments x ", length(cI), " cells"), col = HMCOLS))
         dev.off()
     }
     

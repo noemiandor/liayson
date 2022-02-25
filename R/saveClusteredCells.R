@@ -1,4 +1,4 @@
-saveClusteredCells <- function(outc, expression, ccMembership, sName, outD="~/Downloads", NUMRES=getNumRes()) {
+saveClusteredCells <- function(outc, expression, ccMembership, sName, outD) {
     if(!"G1Malignant" %in% names(ccMembership)){
         warning("List 'ccMembership' must include entry 'G1Malignant', containing the IDs of G0/G1 tumor cells. No data was saved.", immediate. = T)
         return()
@@ -38,7 +38,7 @@ saveClusteredCells <- function(outc, expression, ccMembership, sName, outD="~/Do
             state[ colnames(dm) %in% ccMembership[[thisstate]]]=thisstate
         }
         write.table(cbind(rownames(dm),dm),row.names = F, col.names = c("LOCUS", paste0("Clone_",cols,"_",state,"_",alias)),
-                    sep="\t",quote=F, file=paste0(outD,filesep,sName,".",round(sz,NUMRES),".sps.cbs")); 
+                    sep="\t",quote=F, file=paste0(outD,filesep,sName,".",round(sz,getNumRes()),".sps.cbs")); 
     }
 }
 

@@ -27,7 +27,7 @@ runLIAYSON <- function(X, S, sName, mingps = 20, GRCh = 37, h = 0.2, minSegLengt
     
     ## Save output
     if (!is.null(outD)) {
-        saveClusteredCells(outc, outD, sName)
+        saveClusteredCells(outc, expression = X, ccMembership = list(G1Malignant = names(outc$sps)), sName = sName, outD = outD)
     }
     return(outc)
 }

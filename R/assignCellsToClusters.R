@@ -7,28 +7,36 @@ assignCellsToClusters <- function(outc, xps, similarity = T) {
     ### Don't use segments with unstable CN states within given clone
     seg = rownames(cnvs); #[devFromInt < maxDevFromInt]
     
-    if (similarity) {
-        method = "correlation"
-        d = as.matrix(proxy::simil(t(cbind(cnvs[seg, ], xps[seg, ])), method = method))
-        d = d[colnames(cnvs), colnames(xps)]
-        sps = as.numeric(rownames(d)[apply(d, 2, which.max)])
-        # diff=apply(d,2,max) - apply(d,2, function(x) sort(x,decreasing = T)[2]) sps[diff<1E-4]=NA
-    } else {
-        method = "Euclidean"
-        d = as.matrix(dist(t(cbind(cnvs[seg, ], xps[seg, ])), method = method))
-        d = d[colnames(cnvs), colnames(xps)]
-        sps = as.numeric(rownames(d)[apply(d, 2, which.min)])
+    if(all(outc$sps==1)){
+        # just one subpopulation -- assignment is trivial
+        sps=rep(1,ncol(xps))
+        names(sps) = colnames(xps)
+    }else{
+        if (similarity) {
+            method = "correlation"
+            d = as.matrix(proxy::simil(t(cbind(cnvs[seg, ], xps[seg, ])), method = method))
+            d = d[colnames(cnvs), colnames(xps)]
+            sps = as.numeric(rownames(d)[apply(d, 2, which.max)])
+            # diff=apply(d,2,max) - apply(d,2, function(x) sort(x,decreasing = T)[2]) sps[diff<1E-4]=NA
+        } else {
+            method = "Euclidean"
+            d = as.matrix(dist(t(cbind(cnvs[seg, ], xps[seg, ])), method = method))
+            d = d[colnames(cnvs), colnames(xps)]
+            sps = as.numeric(rownames(d)[apply(d, 2, which.min)])
+        }
+        names(sps) = colnames(d)
     }
-    names(sps) = colnames(d)
     
     outc$cnps = cbind(outc$cnps, xps[rownames(cnvs), !is.na(sps)])
     outc$sps = c(outc$sps, sps[!is.na(sps)])
+    if(all(outc$sps==1)){
+        return(outc)
+    }
     
     x = sort(outc$sps, index.return = T, decreasing = T)
     outc$cnps = outc$cnps[, x$ix]
     outc$sps = x$x
-    
-    
+
     ## Visualize Cap
     minV = quantile(as.numeric(d), 0.025, na.rm = T)
     d[d < minV] = minV
@@ -38,8 +46,7 @@ assignCellsToClusters <- function(outc, xps, similarity = T) {
     HMCOLS = fliplr(brewer.pal(11, "RdBu"))
     col = rainbow(max(outc$sps))
     tmp = outc$sps[names(outc$sps) %in% colnames(d)]
-    hm = try(heatmap.2(t(d[, names(tmp)]), margins = c(13, 6), cexCol = 0.85, col = HMCOLS, colRow = col[tmp], Rowv = NULL, Colv = NULL, trace = "n", symm = F, hclustfun = function(x) hclust(x, 
-        method = "ward.D")))
+    hm = try(heatmap.2(t(d[, names(tmp)]), margins = c(13, 6), cexCol = 0.85, col = HMCOLS, colRow = col[tmp], Rowv = NULL, Colv = NULL, trace = "n", symm = F, hclustfun = function(x) hclust(x, method = "ward.D")))
     
     ## Visualize CN differences between clones
     ix = sort(cnvs[seg, fr$x[1]], index.return = T)$ix

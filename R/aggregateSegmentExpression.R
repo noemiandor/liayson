@@ -1,24 +1,29 @@
 ## Aggregates segment specific gene expression
-aggregateSegmentExpression <- function(epg, segments, mingps = 20, GRCh = 37) {
+aggregateSegmentExpression <- function(epg, segments, dataset="hsapiens_gene_ensembl", mingps = 20, GRCh = 37, host=NULL) {
+    join_id = list(mmusculus_gene_ensembl="mgi_symbol", hsapiens_gene_ensembl="hgnc_symbol")
     LOCCOLS = c("chr", "startpos", "endpos")
     cells = colnames(epg)
     
     ## Map gene IDs to genomic coordinates
     ensembl = NULL
-    if (GRCh == 36) {
-        ensembl = try(useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "may2009.archive.ensembl.org"), silent = T)
-    } else if (GRCh == 37) {
-        ensembl = try(useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "feb2014.archive.ensembl.org"), silent = T)
-        if (class(ensembl) == "try-error") {
-            ensembl = try(useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "grch37.ensembl.org"), silent = T)
-        }
-    } else if (GRCh == 38) {
-        # ensembl = useEnsembl(biomart='ensembl',GRCh=NULL)
-        ensembl = try(useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "dec2016.archive.ensembl.org"), silent = T)
-        if (class(ensembl) == "try-error") {
-            ensembl = try(useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "grch38.ensembl.org"), silent = T)
-        }
-    } 
+    if(!is.null(host)){
+        ensembl = try(useMart("ENSEMBL_MART_ENSEMBL", dataset = dataset, host = host), silent = T)
+    }else{
+        if (GRCh == 36) {
+            ensembl = try(useMart("ENSEMBL_MART_ENSEMBL", dataset = dataset, host = "may2009.archive.ensembl.org"), silent = T)
+        } else if (GRCh == 37) {
+            ensembl = try(useMart("ENSEMBL_MART_ENSEMBL", dataset = dataset, host = "feb2014.archive.ensembl.org"), silent = T)
+            if (class(ensembl) == "try-error") {
+                ensembl = try(useMart("ENSEMBL_MART_ENSEMBL", dataset = dataset, host = "grch37.ensembl.org"), silent = T)
+            }
+        } else if (GRCh == 38) {
+            # ensembl = useEnsembl(biomart='ensembl',GRCh=NULL)
+            ensembl = try(useMart("ENSEMBL_MART_ENSEMBL", dataset = dataset, host = "may2021.archive.ensembl.org"), silent = T)
+            if (class(ensembl) == "try-error") {
+                ensembl = try(useMart("ENSEMBL_MART_ENSEMBL", dataset = dataset, host = "grch38.ensembl.org"), silent = T)
+            }
+        } 
+    }
     
     if(class(ensembl) == "try-error"){
         print(paste("BiomaRt service currently not available. Try again later."))
@@ -27,11 +32,12 @@ aggregateSegmentExpression <- function(epg, segments, mingps = 20, GRCh = 37) {
         warning(paste("GRCh", GRCh, "not supported. Only supporting GRCh=36, GRCh=37 or GRCh=38. Abborting."))
         return()
     }
-    mart = biomaRt::useDataset("hsapiens_gene_ensembl", mart = ensembl)
-    genes <- biomaRt::getBM(c("ensembl_gene_id", "hgnc_symbol", "chromosome_name", "start_position", "end_position"), mart = mart)
+    mart = biomaRt::useDataset(dataset, mart = ensembl)
+    genes <- biomaRt::getBM(c("ensembl_gene_id",join_id[[dataset]], "chromosome_name", "start_position", "end_position"), mart = mart)
     colnames(genes) = gsub("end_position", "endpos", gsub("start_position", "startpos", gsub("chromosome_name", "chr", colnames(genes))))
     
-    x = .intersect_MatlabV(rownames(epg), genes[, "hgnc_symbol"])
+    x = .intersect_MatlabV(toupper(rownames(epg)), toupper(genes[,join_id[[dataset]]]))
+    
     epg = epg[x$ia, , drop = F]
     genes = genes[x$ib, , drop = F]
     epg = cbind(genes[, LOCCOLS], epg)

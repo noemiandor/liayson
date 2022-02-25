@@ -1,7 +1,6 @@
-clusterCells <- function(cnps, k = NA, h = NA, weights = NULL, minSegLength = 1e+06, chrOrder = NULL, HFUN = "ward.D2", ...) {
+clusterCells <- function(cnps, k = NA, h = NA, weights = NULL, minSegLength = 1e+06, chrOrder = NULL, HFUN = "ward.D2", crit="AIC", nrep=25,...) {
     ## CN state colorcode for heatmaps
     HMCOLS = fliplr(brewer.pal(11, "RdBu"))
-    MAXK = 30
     cnps = as.matrix(cnps)
     
     ######################### Cells & loci to keep ##
@@ -40,6 +39,7 @@ clusterCells <- function(cnps, k = NA, h = NA, weights = NULL, minSegLength = 1e
     ################################ # d=as.dist(cophenetic(tree))
     
     ############################ Find number of clones:k ##
+    MAXK = min(30,nrow(unique(t(cnps))))
     if (is.na(k) && is.na(h)) {
         message("Neither k nor h is set.")
         # message('Using indices from NbClust-package to decide number of clusters') # idxs=c('kl', 'ch', 'hartigan','cindex', 'db', 'silhouette', 'ratkowsky', 'ball', 'ptbiserial', 'gap', 'frey',
@@ -55,9 +55,10 @@ clusterCells <- function(cnps, k = NA, h = NA, weights = NULL, minSegLength = 1e
         message("Using Akaike information criterion to decide number of clusters...")
         ks = c()
         ## Repeat for robustness
-        for (i in 1:min(25, ncol(cnps)-1) ) {
-            fit <- sapply(1:MAXK, function(x) .kmeansAIC(kmeans(t(cnps), centers = x))$AIK)
-            ks[i] = which.min(fit)
+        for (i in 1:min(nrep, ncol(cnps)-1 ) ) {
+            fit <- sapply(2:MAXK, function(x) .kmeansAIC(kmeans(t(cnps), centers = x))[[crit]])
+            
+            ks[i] = which.min(fit)+1
         }
         ks = plyr::count(ks)
         k = ks$x[which.max(ks$freq)]
@@ -173,11 +174,16 @@ clusterCells <- function(cnps, k = NA, h = NA, weights = NULL, minSegLength = 1e
 }
 
 .kmeansAIC = function(fit) {
+    # flexclust::cclust(t(cnps), k = x, weights = w,method = "hardcl")
     m = ncol(fit$centers)
+    # m = ncol(fit@centers)
     n = length(fit$cluster)
+    # n = length(fit@cluster)
     k = nrow(fit$centers)
+    # k = fit@k
     D = fit$tot.withinss
-    return(list(AIK = D + 2 * m * k, BIC = D + log(n) * m * k))
+    # D = fit@totaldist
+    return(list(AIC = D + 2 * m * k, BIC = D + log(n) * m * k))
 }
 
 

@@ -8,13 +8,21 @@ saveClusteredCells <- function(outc, expression, ccMembership, sName, outD) {
     idx=match(ccMembership$G1Malignant,names(outc$sps))
     outc_G1=list(cnps=outc$cnps[,idx], sps=outc$sps[idx], tree=outc$tree)
     
-    ## Save G1 clone frequencies only
-    write.table(outc_G1$cnps, file = paste0(outD, filesep, sName, ".sc.cbs"), sep = "\t", quote = F)
     ## Save results: spstats
     spstats = plyr::count(outc_G1$sps)
+    ## Ensure all subpopulations are represented by a unique number of cells
+    while(any(duplicated(spstats$freq))){
+        spstats$freq[duplicated(spstats$freq)] = spstats$freq[duplicated(spstats$freq)]+1
+    }
     spstats$freq = round(spstats$freq/sum(spstats$freq), getNumRes())
+    if(any(duplicated(spstats$freq))){
+        warning(paste("Non-unique subpopulations sizes at size resolution",getNumRes(),". Higher resolution needed to save output."),immediate. = T)
+        return()
+    }
     colnames(spstats) = c("ID", "Mean Weighted")
     write.table(spstats, file = paste0(outD, filesep, sName, ".spstats"), sep = "\t", quote = F, row.names = F)
+    ## Save G1 clone frequencies only
+    write.table(outc_G1$cnps, file = paste0(outD, filesep, sName, ".sc.cbs"), sep = "\t", quote = F)
     ## Save results: sps profiles
     cnvs = t(.grpstats(t(outc_G1$cnps), outc_G1$sps, "mean")$mean)
     cnvs = cnvs[, rownames(spstats), drop = F]
